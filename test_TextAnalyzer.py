@@ -35,12 +35,12 @@ class TestTextAnalyzer(unittest.TestCase):
         ta.reset_content()
         self.assertEqual(ta._content[0], '<')
 
-    # def test_common_words(self):
-    #     ta = TextAnalyzer(path, src_type='path')
-    #     common_words = ta.common_words(minlen=5, maxlen=10)
-    #     liz = common_words[0]
-    #     self.assertEqual(liz[0], 'ELIZABETH')
-    #
+    def test_common_words(self):
+        ta = TextAnalyzer(path, src_type='path')
+        common_words = ta.common_words(minlen=5, maxlen=10)
+        liz = common_words[0]
+        self.assertEqual(liz[0], 'ELIZABETH')
+
     # def test_avg_word_length(self):
     #     ta = TextAnalyzer(text, src_type='text')
     #     self.assertEqual(ta.avg_word_length, 4.16)

@@ -2,14 +2,14 @@ import string
 import pandas as pd
 import numpy as np
 from bs4 import BeautifulSoup as bs
-import os
 import requests
 from requests.exceptions import HTTPError
+from collections import Counter
 
 
 class TextAnalyzer:
 
-    def __init__(self, src, *args):
+    def __init__(self, src, src_type='path', *args):
         # intialize the class with a string of some sort
 
         self._src_type = ''
@@ -25,6 +25,7 @@ class TextAnalyzer:
             try:
                 src += ''
                 self._src_type = 'text'
+                self._content = src
             except:
                 # Don't crash just move on
                 pass
@@ -89,6 +90,7 @@ class TextAnalyzer:
     def _word(self, casesensitive=False):
         # Returns words in _content as list.
         # casesensitive(bool)--if False makes all words uppercase
+
         li = []
 
         trans = self._content.maketrans('', '', string.punctuation)
@@ -98,21 +100,77 @@ class TextAnalyzer:
         if casesensitive is False:
             self._content = self._content.upper()
             li = list(self._content.split(' '))
-            return li
+            f_list = [l.strip() for l in li]
+            return f_list
         else:
             li = list(self._content.split(' '))
-            return li
+            f_list = [l.strip() for l in li]
+            return f_list
 
     def common_words(self, minlen=1, maxlen=100, count=10, casesensitive=False):
         # Returns a list of 2 element tuples of the structure(word, num) where num is the number
         # of times word shows up in _content
-        pass
+        le = []
+        wordfreq = []
+        flist = []
+        if casesensitive is False:
+            li = self._word(casesensitive = False)
+        else:
+            li = self._word()
+            li = list(filter(None, li))
+
+        # create a list with min and max settings
+        for el in li:
+            if (len(el) < maxlen) and (len(el) > minlen):
+                le.append(el)
+
+        for w in le:
+            wordfreq.append(li.count(w))
+        wl = zip(le, wordfreq)
+        results = set(wl)
+        l = list(results)
+        l.sort(key = lambda x: x[1], reverse=True)
+        if count < len(l):
+            return l[:count]
+        else:
+            return l[:10]
 
     def char_distribution(self, casesenitive=False, letters_only=False):
         # Returns a list of 2 element tuples of the format(char, num) where num
         # is the number of times char shows up in _content. The list should
         # be sorted by num in descending order.
-        pass
+        newstring = ''
+        s = self._content
+        if (casesenitive is False) and (letters_only is False):
+            s = self._content
+            s = s.upper()
+            c = Counter(s)
+        if (casesenitive is True) and (letters_only is False):
+            s = self._content
+            c = Counter(s)
+        if (casesenitive is False) and (letters_only is True):
+            s = self._content
+            s = s.upper()
+            t = s.isalpha()
+            if t:
+                c = Counter(s)
+            else:
+                for el in s:
+                    if el.isalpha():
+                        newstring += el
+                c = Counter(newstring)
+        if (casesenitive is True) and (letters_only is True):
+            s = self._content
+            t = s.isalpha()
+            if t:
+                c = Counter(s)
+            else:
+                for el in s:
+                    if el.isalpha():
+                        newstring += el
+                c = Counter(newstring)
+
+        return c
 
     def plot_common_words(self, minlen=1, maxlen=100, count=10, casesensitive=False):
         # plots the most common words
@@ -129,6 +187,7 @@ class TextAnalyzer:
     def word_count(count):
         # the number of words in _content
         pass
+
 
     def distinct_word_count(self):
         # The number of distinct words in _content. This should not be case sensitive
@@ -151,11 +210,16 @@ class TextAnalyzer:
     def main():
         url = 'https://www.webucator.com/how-to/address-by-bill-clinton-1997.cfm'
         path = 'pride-and-prejudice.txt'
-        text = '''The outlook wasn't brilliant for the Mudville Nine that day;
-            the score stood four to two, with but one inning more to play.
-            And then when Cooney died at first, and Barrows did the same,
-            a sickly silence fell upon the patrons of the game.'''
-        ta = TextAnalyzer(path)
+        #text = '''The outlook wasn't brilliant for the Mudville Nine that day;
+        #    the score stood four to two, with but one inning more to play.
+        #    And then when Cooney died at first, and Barrows did the same,
+        #    a sickly silence fell upon the patrons of the game.'''
+
+        text = '''The outlook wasn't two brilliant for the Mudville Nine that day;
+            the score stood four outlook to two, with but one inning more to play.
+            And then same game did when Cooney died at to first, and Barrows did the same,
+            a sickly the score silence fell upon the Mudville patrons of the game.'''
+        #ta = TextAnalyzer(path)
 
         #ta.set_content_to_tag('div', 'content-main')
 
@@ -164,7 +228,12 @@ class TextAnalyzer:
         #print(ta._content)
         ta = TextAnalyzer(path)
         #ta._word(casesensitive=False)
-        print(ta._word(casesensitive=False))
+        print(ta.common_words(minlen=5, maxlen=10, count=20, casesensitive=False))
+        #print(ta.char_distribution(casesenitive=False, letters_only=False))
+        #print(ta.char_distribution(casesenitive=True, letters_only=False))
+        #print(ta.char_distribution(casesenitive=False, letters_only=True))
+        #print(ta.char_distribution(casesenitive=True, letters_only=True))
+
 
 if __name__ == '__main__':
     TextAnalyzer.main()
