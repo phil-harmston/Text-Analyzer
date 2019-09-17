@@ -41,18 +41,18 @@ class TestTextAnalyzer(unittest.TestCase):
         liz = common_words[0]
         self.assertEqual(liz[0], 'ELIZABETH')
 
-    # def test_avg_word_length(self):
-    #     ta = TextAnalyzer(text, src_type='text')
-    #     self.assertEqual(ta.avg_word_length, 4.16)
-    #
-    # def test_word_count(self):
-    #     ta = TextAnalyzer(text, src_type='text')
-    #     self.assertEqual(ta.word_count, 45)
-    #
-    # def test_distinct_word_count(self):
-    #     ta = TextAnalyzer(text, src_type='text')
-    #     self.assertEqual(ta.distinct_word_count, 38)
-    #
+    def test_avg_word_length(self):
+        ta = TextAnalyzer(text, src_type='text')
+        self.assertEqual(ta.avg_word_length(), 4.16)
+
+    def test_word_count(self):
+        ta = TextAnalyzer(text, src_type='text')
+        self.assertEqual(ta.word_count(), 45)
+
+    def test_distinct_word_count(self):
+        ta = TextAnalyzer(text, src_type='text')
+        self.assertEqual(ta.distinct_word_count(), 38)
+
     # def test_char_distribution(self):
     #     ta = TextAnalyzer(text, src_type='text')
     #     char_dist = ta.char_distribution(letters_only=True)

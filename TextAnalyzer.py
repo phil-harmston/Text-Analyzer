@@ -5,11 +5,11 @@ from bs4 import BeautifulSoup as bs
 import requests
 from requests.exceptions import HTTPError
 from collections import Counter
-
+import re
 
 class TextAnalyzer:
 
-    def __init__(self, src, src_type='path', *args):
+    def __init__(self, src, **kargs):
         # intialize the class with a string of some sort
 
         self._src_type = ''
@@ -92,18 +92,21 @@ class TextAnalyzer:
         # casesensitive(bool)--if False makes all words uppercase
 
         li = []
-
-        trans = self._content.maketrans('', '', string.punctuation)
-        self._content = self._content.translate(trans)
+        s = self._content
+        s = re.sub(r"([^a-zA-Z'])", ' ', s)
+        #trans = self._content.maketrans('', '', string.punctuation)
+        #s = s.translate(trans)
 
         # Return Upper case if false
         if casesensitive is False:
-            self._content = self._content.upper()
-            li = list(self._content.split(' '))
+            s = s.upper()
+            li = list(s.split(' '))
+            li = list(filter(None, li))
             f_list = [l.strip() for l in li]
             return f_list
         else:
-            li = list(self._content.split(' '))
+            li = list(s.split(' '))
+            li = list(filter(None, li))
             f_list = [l.strip() for l in li]
             return f_list
 
@@ -142,14 +145,14 @@ class TextAnalyzer:
         newstring = ''
         s = self._content
         if (casesenitive is False) and (letters_only is False):
-            s = self._content
+            #s = self._content
             s = s.upper()
             c = Counter(s)
         if (casesenitive is True) and (letters_only is False):
-            s = self._content
+            #s = self._content
             c = Counter(s)
         if (casesenitive is False) and (letters_only is True):
-            s = self._content
+            #s = self._content
             s = s.upper()
             t = s.isalpha()
             if t:
@@ -160,7 +163,7 @@ class TextAnalyzer:
                         newstring += el
                 c = Counter(newstring)
         if (casesenitive is True) and (letters_only is True):
-            s = self._content
+            #s = self._content
             t = s.isalpha()
             if t:
                 c = Counter(s)
@@ -182,21 +185,31 @@ class TextAnalyzer:
 
     def avg_word_length(self):
         # The average word length in _content rounded to the 100th place(3.82)
-        pass
+        li = self._word()
+        average = sum(len(word)for word in li)/len(li)
+        average = round(average, 2)
+        return average
 
-    def word_count(count):
+    def word_count(self):
         # the number of words in _content
-        pass
+        li = self._word()
+        return len(li)
+
 
 
     def distinct_word_count(self):
         # The number of distinct words in _content. This should not be case sensitive
         # "You" and "you" should be considered the same word.
-        pass
+        li = self._word()
+        s = set(li)
+        return len(s)
+
+
 
     def words(self):
         # A list of all words used in _content, including repeats, in all uppercase letters.
-        pass
+        li = self._word()
+        return li
 
     def positivity(self):
         # A positivity score calculated as follows:
@@ -210,15 +223,15 @@ class TextAnalyzer:
     def main():
         url = 'https://www.webucator.com/how-to/address-by-bill-clinton-1997.cfm'
         path = 'pride-and-prejudice.txt'
-        #text = '''The outlook wasn't brilliant for the Mudville Nine that day;
-        #    the score stood four to two, with but one inning more to play.
-        #    And then when Cooney died at first, and Barrows did the same,
-        #    a sickly silence fell upon the patrons of the game.'''
+        text = '''The outlook wasn't brilliant for the Mudville Nine that day;
+        the score stood four to two, with but one inning more to play.
+        And then when Cooney died at first, and Barrows did the same,
+        a sickly silence fell upon the patrons of the game.'''
 
-        text = '''The outlook wasn't two brilliant for the Mudville Nine that day;
-            the score stood four outlook to two, with but one inning more to play.
-            And then same game did when Cooney died at to first, and Barrows did the same,
-            a sickly the score silence fell upon the Mudville patrons of the game.'''
+        tsttext = '''The outlook wasn't two brilliant for the Mudville Nine that day;
+        the score stood four outlook to two, with but one inning more to play.
+        And then same game did when Cooney died at to first, and Barrows did the same,
+        a sickly the score silence fell upon the Mudville patrons of the game.'''
         #ta = TextAnalyzer(path)
 
         #ta.set_content_to_tag('div', 'content-main')
@@ -226,14 +239,16 @@ class TextAnalyzer:
         #print(ta._src_type)
 
         #print(ta._content)
-        ta = TextAnalyzer(path)
+        ta = TextAnalyzer(text)
         #ta._word(casesensitive=False)
-        print(ta.common_words(minlen=5, maxlen=10, count=20, casesensitive=False))
+        #print(ta.common_words(minlen=5, maxlen=10, count=20, casesensitive=False))
         #print(ta.char_distribution(casesenitive=False, letters_only=False))
         #print(ta.char_distribution(casesenitive=True, letters_only=False))
         #print(ta.char_distribution(casesenitive=False, letters_only=True))
         #print(ta.char_distribution(casesenitive=True, letters_only=True))
-
+        #print(ta._word(casesensitive=True))
+        #print(ta.avg_word_length())
+        print(ta.words())
 
 if __name__ == '__main__':
     TextAnalyzer.main()
