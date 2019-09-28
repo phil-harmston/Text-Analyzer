@@ -6,6 +6,7 @@ import requests
 from requests.exceptions import HTTPError
 from collections import Counter
 import re
+import matplotlib.pyplot as plt
 
 class TextAnalyzer:
 
@@ -113,6 +114,11 @@ class TextAnalyzer:
     def common_words(self, minlen=1, maxlen=100, count=10, casesensitive=False):
         # Returns a list of 2 element tuples of the structure(word, num) where num is the number
         # of times word shows up in _content
+        if (minlen < 1):
+            minlen = 1
+        if (maxlen < 1):
+            maxlen = 1
+
         le = []
         wordfreq = []
         flist = []
@@ -145,14 +151,14 @@ class TextAnalyzer:
         newstring = ''
         s = self._content
         if (casesenitive is False) and (letters_only is False):
-            #s = self._content
+
             s = s.upper()
             c = Counter(s)
         if (casesenitive is True) and (letters_only is False):
-            #s = self._content
+
             c = Counter(s)
         if (casesenitive is False) and (letters_only is True):
-            #s = self._content
+
             s = s.upper()
             t = s.isalpha()
             if t:
@@ -162,8 +168,9 @@ class TextAnalyzer:
                     if el.isalpha():
                         newstring += el
                 c = Counter(newstring)
+
         if (casesenitive is True) and (letters_only is True):
-            #s = self._content
+
             t = s.isalpha()
             if t:
                 c = Counter(s)
@@ -173,15 +180,30 @@ class TextAnalyzer:
                         newstring += el
                 c = Counter(newstring)
 
-        return c
+        return c.items()
 
     def plot_common_words(self, minlen=1, maxlen=100, count=10, casesensitive=False):
         # plots the most common words
-        pass
+        # catch min lenght error
 
-    def plot_char_distibution(self, casesensitive=False, letters_only=False):
+        data = self.common_words(minlen, maxlen, count, casesensitive)
+
+        df = pd.DataFrame(data, columns=['WORDS', 'COUNT'])
+
+        df.plot(kind='bar', x='WORDS', y='COUNT')
+        plt.title('Words in ' + self._src_type)
+        plt.show()
+
+
+
+    def plot_char_distibution(self, casesenitive=False, letters_only=False):
         # plots character distribution
-        pass
+        data = self.char_distribution(casesenitive, letters_only)
+        df = pd.DataFrame(data, columns=['LETTERS', 'COUNT'])
+        print(df)
+        df.plot(kind='bar', x='LETTERS', y='COUNT')
+        plt.title('Characters in ' + self._src_type)
+        plt.show()
 
     def avg_word_length(self):
         # The average word length in _content rounded to the 100th place(3.82)
@@ -228,10 +250,6 @@ class TextAnalyzer:
         And then when Cooney died at first, and Barrows did the same,
         a sickly silence fell upon the patrons of the game.'''
 
-        tsttext = '''The outlook wasn't two brilliant for the Mudville Nine that day;
-        the score stood four outlook to two, with but one inning more to play.
-        And then same game did when Cooney died at to first, and Barrows did the same,
-        a sickly the score silence fell upon the Mudville patrons of the game.'''
         #ta = TextAnalyzer(path)
 
         #ta.set_content_to_tag('div', 'content-main')
@@ -240,7 +258,7 @@ class TextAnalyzer:
 
         #print(ta._content)
         ta = TextAnalyzer(text)
-        #ta._word(casesensitive=False)
+        #ta._word(casesensitive=False   )
         #print(ta.common_words(minlen=5, maxlen=10, count=20, casesensitive=False))
         #print(ta.char_distribution(casesenitive=False, letters_only=False))
         #print(ta.char_distribution(casesenitive=True, letters_only=False))
@@ -248,7 +266,7 @@ class TextAnalyzer:
         #print(ta.char_distribution(casesenitive=True, letters_only=True))
         #print(ta._word(casesensitive=True))
         #print(ta.avg_word_length())
-        print(ta.words())
+        ta.plot_char_distibution(letters_only=True)
 
 if __name__ == '__main__':
     TextAnalyzer.main()

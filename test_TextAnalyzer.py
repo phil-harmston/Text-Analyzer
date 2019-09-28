@@ -53,11 +53,11 @@ class TestTextAnalyzer(unittest.TestCase):
         ta = TextAnalyzer(text, src_type='text')
         self.assertEqual(ta.distinct_word_count(), 38)
 
-    # def test_char_distribution(self):
-    #     ta = TextAnalyzer(text, src_type='text')
-    #     char_dist = ta.char_distribution(letters_only=True)
-    #     self.assertEqual(char_dist[1][1], 20)
-    #
+    def test_char_distribution(self):
+        ta = TextAnalyzer(text, src_type='text')
+        char_dist = ta.char_distribution(letters_only=True)
+        self.assertEqual(char_distribution[1][1], 20)
+
     # def test_positivity(self):
     #     ta = TextAnalyzer(text, src_type='text')
     #     positivity = ta.positivity
