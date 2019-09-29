@@ -105,17 +105,20 @@ class TextAnalyzer:
             f_list = [l.strip() for l in li]
             return f_list
 
-    def common_words(self, minlen=1, maxlen=100, count=10, casesensitive=False):
+    def common_words(self, minlen=1, maxlen=100, count=10, casesensitive=False, r=True):
         '''Returns a list of 2 element tuples of the structure(word, num) where num is the number
-        of times word shows up in _content'''
+        of times word shows up in _content
+        to get the list from largest to smallest set r=True,  to get smallest count to largest set
+        r = False'''
+        # Error check than min and max are greater than 0
         if (minlen < 1):
             minlen = 1
         if (maxlen < 1):
             maxlen = 1
-
+        # Set up and intialize lists to use in the function
         le = []
         wordfreq = []
-        flist = []
+       # li is the incoming list
         if casesensitive is False:
             li = self._word(casesensitive = False)
         else:
@@ -125,18 +128,22 @@ class TextAnalyzer:
         # create a list with min and max settings
         for el in li:
             if (len(el) <= maxlen) and (len(el) >= minlen):
+                # le is the new list being created
                 le.append(el)
 
         for w in le:
+            # word freq is a list of counts of the words
             wordfreq.append(li.count(w))
+        # wl is a list of tuples with the word and count
         wl = zip(le, wordfreq)
         results = set(wl)
         l = list(results)
-        l.sort(key = lambda x: x[1], reverse=True)
-        if count < len(l):
+        l.sort(key = lambda x: x[1], reverse=r)
+        if (count <= len(l)) and (count > 0):
             return l[:count]
-        else:
-            return l[:10]
+        if (count == 0):
+            count = len(l)
+            return l[:count]
 
     def char_distribution(self, casesenitive=False, letters_only=False):
         '''Returns a list of 2 element tuples of the format(char, num) where num
@@ -298,6 +305,14 @@ class TextAnalyzer:
                         li.append(word)
 
         return li
+    def any_count(self, count = 1):
+        li = self.common_words(count=0, r=False)
+        le = []
+        for el in li:
+            x = el[1]
+            if x == count:
+                le.append(el)
+        return le
 
     def main():
         url = 'https://www.webucator.com/how-to/address-by-bill-clinton-1997.cfm'
@@ -310,20 +325,18 @@ class TextAnalyzer:
                    'https://www.webucator.com/how-to/harry-s-trumans-inaugural-address.cfm',
                    'https://www.webucator.com/how-to/william-mckinleys-inaugural-address.cfm',
                    'https://www.webucator.com/how-to/zachary-taylors-inaugural-address.cfm']
-        # ta = TextAnalyzer(path)
+
+        ta = TextAnalyzer(path)
 
         # ta.set_content_to_tag('div', 'content-main')
 
         # print(ta._src_type)
 
         # print(ta._content)
-        for a in address:
-            print(a)
-
-            ta = TextAnalyzer(a)
-            ta.set_content_to_tag(tag = 'div', tag_id='content-main')
-            print(ta._content)
-            print(ta.positivity())
+        #for a in address:
+        #    ta = TextAnalyzer(a)
+        #    ta.set_content_to_tag(tag = 'div', tag_id='content-main')
+        #    print(ta.positivity())
 
 
         # ta._word(casesensitive=False)
@@ -343,6 +356,10 @@ class TextAnalyzer:
         #print(ta.positivity())
         #print(ta.common_words(minlen=11))
         #print(ta.common_words())
+        #ta = TextAnalyzer(path)
+        #print(ta.distinct_word_case(maxlen=5, letter='A'))
+        print(len(ta.any_count(count = 1)))
+
 
 if __name__ == '__main__':
     TextAnalyzer.main()
