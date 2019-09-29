@@ -124,7 +124,7 @@ class TextAnalyzer:
 
         # create a list with min and max settings
         for el in li:
-            if (len(el) < maxlen) and (len(el) > minlen):
+            if (len(el) <= maxlen) and (len(el) >= minlen):
                 le.append(el)
 
         for w in le:
@@ -181,7 +181,7 @@ class TextAnalyzer:
         return l
 
     def plot_common_words(self, minlen=1, maxlen=100, count=10, casesensitive=False):
-        '''plots the most common words catch min lenght error'''
+        '''plots the most common words catch min length error'''
 
         data = self.common_words(minlen, maxlen, count, casesensitive)
 
@@ -193,7 +193,7 @@ class TextAnalyzer:
 
 
 
-    def plot_char_distibution(self, casesenitive=False, letters_only=False):
+    def plot_char_distribution(self, casesenitive=False, letters_only=False):
         '''plots character distribution'''
         data = self.char_distribution(casesenitive, letters_only)
         df = pd.DataFrame(data, columns=['LETTERS', 'COUNT'])
@@ -267,8 +267,82 @@ class TextAnalyzer:
         score = round(tally / self.word_count() * 1000)
         return score
 
+
+
+
+    def is_palindrome(self):
+        '''returns a list of palindromes over 3 characters long'''
+        # Inner function to reverse the word
+        def _reverse(word):
+            return word[::-1]
+        # creates a set to avoid duplicates of words.
+        se = set(self.words())
+        # intialize a new list to return
+        n_li =[]
+        # check the set for palindromes
+        for word in se:
+            if (len(word)>=3):
+                rev = _reverse(word)
+                if rev == word:
+                    #create the list and return it.
+                    n_li.append(rev)
+        return n_li
+
+    def distinct_word_case(self, minlen=1, maxlen=10, letter = 'A'):
+        se = set(self._word(casesensitive=True))
+        li = []
+        for word in se:
+            if (len(word) <= maxlen) and (len(word) >= minlen):
+                for w in word:
+                    if letter in w:
+                        li.append(word)
+
+        return li
+
     def main():
-        pass
+        url = 'https://www.webucator.com/how-to/address-by-bill-clinton-1997.cfm'
+        path = 'pride-and-prejudice.txt'
+        text = '''The outlook wasn't brilliant for the Mudville Nine that day;
+               the score stood four to two, with but one inning more to play.
+               And then when Cooney died at first, and Barrows did the same,
+               a sickly silence fell upon the patrons of the game.'''
+        address = ['https://www.webucator.com/how-to/george-bushs-inaugural-address.cfm',
+                   'https://www.webucator.com/how-to/harry-s-trumans-inaugural-address.cfm',
+                   'https://www.webucator.com/how-to/william-mckinleys-inaugural-address.cfm',
+                   'https://www.webucator.com/how-to/zachary-taylors-inaugural-address.cfm']
+        # ta = TextAnalyzer(path)
+
+        # ta.set_content_to_tag('div', 'content-main')
+
+        # print(ta._src_type)
+
+        # print(ta._content)
+        for a in address:
+            print(a)
+
+            ta = TextAnalyzer(a)
+            ta.set_content_to_tag(tag = 'div', tag_id='content-main')
+            print(ta._content)
+            print(ta.positivity())
+
+
+        # ta._word(casesensitive=False)
+        #li = ta.common_words(minlen=1, casesensitive=False)
+        #li = sorted(li, reverse=True)
+        #print(li)
+        #print(len(ta.is_palindrome()))
+        # print(ta.char_distribution(caseseni
+        #print(len(ta.distinct_word_case(minlen=1, maxlen=4, letter='A')))
+        # tive=False, letters_only=False))
+        # print(ta.char_distribution(casesenitive=True, letters_only=False))
+        # print(ta.char_distribution(casesenitive=False, letters_only=True))
+        # print(ta.char_distribution(casesenitive=True, letters_only=True))
+        # print(ta._word(casesensitive=True))
+        # print(ta.avg_word_length())
+        #ta.plot_char_distibution(letters_only=True)
+        #print(ta.positivity())
+        #print(ta.common_words(minlen=11))
+        #print(ta.common_words())
 
 if __name__ == '__main__':
     TextAnalyzer.main()
