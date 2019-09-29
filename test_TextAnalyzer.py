@@ -56,12 +56,12 @@ class TestTextAnalyzer(unittest.TestCase):
     def test_char_distribution(self):
         ta = TextAnalyzer(text, src_type='text')
         char_dist = ta.char_distribution(letters_only=True)
-        self.assertEqual(char_distribution[1][1], 20)
+        self.assertEqual(char_dist[1][1], 20)
 
-    # def test_positivity(self):
-    #     ta = TextAnalyzer(text, src_type='text')
-    #     positivity = ta.positivity
-    #     self.assertEqual(positivity, -44)
+    def test_positivity(self):
+        ta = TextAnalyzer(text, src_type='text')
+        positivity = ta.positivity()
+        self.assertEqual(positivity, -44)
 
 
 suite = unittest.TestLoader().loadTestsFromTestCase(TestTextAnalyzer)
